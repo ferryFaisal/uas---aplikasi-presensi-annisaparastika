@@ -1,293 +1,198 @@
-<!doctype html>
+<?php
+require 'include/connect_db.php';
+
+session_start();
+
+if (isset($_SESSION['login']) && $_SESSION['role'] == "Admin") { //jika sudah login
+} else if (isset($_SESSION['login']) && $_SESSION['role'] == "Dosen") {
+    header("Location: frontend/index.php");
+} else {
+    die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
+
+}
+
+$sql = "SELECT * FROM user";
+$result = mysqli_query($conn, $sql);
+
+$sql1 = "SELECT * FROM mahasiswa";
+$result1 = mysqli_query($conn, $sql1);
+
+$sql2 = "SELECT * FROM presensi";
+$result2 = mysqli_query($conn, $sql2);
+?>
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Input | Presensi Mahasiswa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Admin,  Welcome!</title>
+  <script type="application/x-javascript">
+        addEventListener("load", function() {
+            setTimeout(hideURLbar, 0);
+        }, false);
+
+        function hideURLbar() {
+            window.scrollTo(0, 1);
+        }
+    </script>
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Page level plugin CSS-->
+  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin.css" rel="stylesheet">
+
 </head>
-<body class="bg-dark">
-    <h1></h1>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
-    
-    <div class="container">
-    <div class="card card-register mx-auto mt-5">
-      <div class="card-header text-center"><h4>Pengisian Kehadiran Mahasiswa</h4></div>
-      <div class="card-body">
-        <form method="POST" action="">
-          <!-- <div class="form-group"> -->
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="date" id="tgl" name="tgl" class="form-control" placeholder="Tgl" autofocus="autofocus" value="">
+
+<body id="page-top">
+
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+  <?php include('include/navbar.php') ?>
+  <?php include('include/admin_profile.php') ?>
+ 
+  </nav>
+
+  <div id="wrapper">
+  <?php 
+  include('include/admin_sidebar.php')
+  ?>
+    <div id="content-wrapper">
+
+      <div class="container-fluid">
+      <?php
+require 'include/connect_db.php';
+$sql2 = "SELECT * FROM user where email= '$_SESSION[login]'";
+$result2 = mysqli_query($conn, $sql2);
+$cek2 = mysqli_num_rows($result2);
+
+if ($cek2 > 0) {
+$row2 = mysqli_fetch_assoc($result2);
+echo "<h5>Selamat Datang, ". $_SESSION['name'] ."</h5>";
+}
+?>
+        <br>
+        <!-- Icon Cards-->
+        <div class="row">
+          <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-primary o-hidden h-100">
+              <div class="card-body">
+                <div class="card-body-icon">
+                  <i class="fas fa-fw fa-comments"></i>
                 </div>
+                <div class="mr-5">User</div>
+
               </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="makul" id="makul" class="form-control" autofocus="autofocus">
-                    <option value=""> -- Pilih Mata Kuliah  -- </option>
-                    <option value="WebProg"> Pemrograman Web </option>
-                    <option value="WebProgLab"> Praktik Pemrograman Web </option>
-                    <option value="SoftDev"> Rekayasa Perangkat Lunak </option>
-                  </select>
+              <a class="card-footer text-white clearfix small z-1" href="admin_user_table.php">
+                <span class="float-left"></span>
+                <span class="float-left">View Details</span>
+                <span class="float-right">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-warning o-hidden h-100">
+              <div class="card-body">
+                <div class="card-body-icon">
+                  <i class="fas fa-fw fa-list"></i>
                 </div>
+                <div class="mr-5">Mahasiswa</div>
               </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="kelas" id="kelas" class="form-control" autofocus="autofocus">
-                    <option value=""> -- Pilih Kelas -- </option>
-                    <option value="5A"> 5A </option>
-                    <option value="5B"> 5B </option>
-                  </select>
+              <a class="card-footer text-white clearfix small z-1" href="admin_mahasiswa_table.php">
+                <span class="float-left">View Details</span>
+                <span class="float-right">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mb-3">
+              <div class="card text-white bg-success o-hidden h-100">
+                <div class="card-body">
+                  <div class="card-body-icon">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                  </div>
+                  <div class="mr-5">Presensi</div>
                 </div>
-              </div>
-            </div><hr>
-            <div class="row text-center">
-                <div class="col-md-4"><strong>Nomor Induk Mahasiswa</strong></div>
-                <div class="col-md-4"><strong>Nama Lengkap</strong></div>
-                <div class="col-md-4"><strong>Status Presensi</strong></div>
-            </div><hr>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016040">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Rabuansah">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
+                <a class="card-footer text-white clearfix small z-1" href="admin_presensi_table.php">
+                  <span class="float-left">View Details</span>
+                  <span class="float-right">
+                    <i class="fas fa-angle-right"></i>
+                  </span>
+                </a>
               </div>
             </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016041">
+            <!-- <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="card text-white bg-danger o-hidden h-100">
+              <div class="card-body">
+                <div class="card-body-icon">
+                  <i class="fas fa-fw fa-life-ring"></i>
                 </div>
+                <div class="mr-5">Halaman Presensi</div>
               </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Annisa Parastika Adellia">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
+              <a class="card-footer text-white clearfix small z-1" href="frontend/index-admin.php">
+                <span class="float-left">View Details</span>
+                <span class="float-right">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </a>
             </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016042">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Egi Aenggi">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016045">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Jurina">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016074">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Feby Paramudia">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016075">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Susan">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016076">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Tari">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016077">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Jaka Adi Baskara">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016078">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Aris Adhadi">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row form-row mb-1">
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" value="3202016079">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" value="Uray Ibnu Setiawan">
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-label-group">
-                  <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                      <option value=""> -- Pilih Status -- </option>
-                      <option value="Hadir"> Hadir </option>
-                      <option value="Sakit"> Sakit </option>
-                      <option value="Izin"> Izin </option>
-                      <option value="Alpa"> Alpa </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          <!-- </div> -->
-          <br>
-          <p class="text-center">
-          <input type="submit" name="submit" value="Simpan Presensi" class="btn btn-primary btn-block"></p>
-          <!-- <a class="btn btn-secondary btn-block" href="users.php">Cancel</a> -->
-        </form>
-        <div class="text-center">
-          <br>Copyright © Program Studi Teknik Informatika - <?= date('Y');?><br>
+          </div> -->
         </div>
-      </div>
+        </div>
+
+      <!-- /.container-fluid -->
+
+      <!-- Sticky Footer -->
+      <footer class="sticky-footer">
+        <?php include('include/footer.php')?>
+      </footer>
+
     </div>
-                
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  
+<!-- logout -->
+<?php include ('include/logout.php') ?>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Page level plugin JavaScript-->
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="vendor/datatables/jquery.dataTables.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin.min.js"></script>
+
+  <!-- Demo scripts for this page-->
+  <script src="js/demo/datatables-demo.js"></script>
+  <script src="js/demo/chart-area-demo.js"></script>
+
 </body>
+
 </html>
